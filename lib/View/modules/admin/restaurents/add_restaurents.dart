@@ -13,11 +13,18 @@ class AddRestaurentsPage extends StatelessWidget {
   String locationName;
   AddRestaurentsPage(
       {super.key, required this.placeId, required this.locationName});
+
+  void cleardata() {
+    image = null;
+    description.clear();
+    location.clear();
+    resaturentNmae.clear();
+  }
+
   String? image;
   TextEditingController description = TextEditingController();
   TextEditingController location = TextEditingController();
   TextEditingController resaturentNmae = TextEditingController();
-  TextEditingController price = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
@@ -250,6 +257,7 @@ class AddRestaurentsPage extends StatelessWidget {
                                           actions: [
                                             TextButton(
                                                 onPressed: () {
+                                                  cleardata();
                                                   Navigator.pushReplacement(
                                                       context,
                                                       MaterialPageRoute(

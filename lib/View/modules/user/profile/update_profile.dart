@@ -75,7 +75,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
                 );
               }
               selectedUserType = store.type;
-              selectedGender = store.gender!;
+              selectedGender = store.gender!.isEmpty ? "MALE" : store.gender!;
               return SizedBox(
                 height: double.infinity,
                 width: double.infinity,
@@ -227,7 +227,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
                                 border: OutlineInputBorder(
                                   borderRadius: const BorderRadius.all(
                                       Radius.circular(10)),
-                                  borderSide: new BorderSide(
+                                  borderSide: BorderSide(
                                       color: const Color.fromRGBO(
                                           158, 158, 158, 1)),
                                 ),

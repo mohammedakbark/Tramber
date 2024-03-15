@@ -232,10 +232,11 @@ class _sign_upState extends State<sign_up> {
                                   state: ""),
                               context);
                           // ignore: use_build_context_synchronously
-                          Navigator.pushReplacement(
-                              context,
+                          Navigator.of(context).pushAndRemoveUntil(
                               MaterialPageRoute(
-                                  builder: (context) => HomePage()));
+                                builder: (context) => HomePage(),
+                              ),
+                              (route) => false);
                           // Navigator.pushReplacement(context,
                           //     MaterialPageRoute(builder: (context) => home()));
                         }

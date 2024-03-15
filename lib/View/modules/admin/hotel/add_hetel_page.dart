@@ -12,6 +12,14 @@ class AddHotelsPage extends StatelessWidget {
   String placeId;
   String locationName;
   AddHotelsPage({super.key, required this.placeId, required this.locationName});
+  void cleardata() {
+    image = null;
+    description.clear();
+    location.clear();
+    hotelNmae.clear();
+    price.clear();
+  }
+
   String? image;
   TextEditingController description = TextEditingController();
   TextEditingController location = TextEditingController();
@@ -250,6 +258,7 @@ class AddHotelsPage extends StatelessWidget {
                                           actions: [
                                             TextButton(
                                                 onPressed: () {
+                                                  cleardata();
                                                   Navigator.pushReplacement(
                                                       context,
                                                       MaterialPageRoute(
@@ -278,7 +287,7 @@ class AddHotelsPage extends StatelessWidget {
                           style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.black),
                           child: Text(
-                            "Add hotel",
+                            "Add Hotel",
                             style: TextStyle(color: Colors.white),
                           ))
                     ]))),

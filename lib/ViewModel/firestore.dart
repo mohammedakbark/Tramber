@@ -42,12 +42,20 @@ class Firestore with ChangeNotifier {
   }
 
 //**************************USER***************************************************************//
+
+  //---------------D E S T I N A T I O N
+  Future fetchDestination() async {
+    await _fetchFamilyDestination().then((value) async {
+      await _fetchTopCategory().then((value) async {
+        await _fetchAdventure();
+      });
+    });
+  }
+
+///////////////////////////////////
   Future fetchDatas(lginId) async {
-    await _fetchTopCategory();
-    await _fetchAdventure();
-    await _fetchFamilyDestination();
     // await _fethcAllDestinaton();
-    await fetchAllHoster();
+
     await _fetchCurrentUser(lginId);
     // notifyListeners();
   }
@@ -65,6 +73,7 @@ class Firestore with ChangeNotifier {
     }
   }
 
+//-----------------C O U C H I N G
   fetchAllHoster() async {
     QuerySnapshot<Map<String, dynamic>> usersSnapshot = await db
         .collection("user")
@@ -74,23 +83,35 @@ class Firestore with ChangeNotifier {
       return UserModel.fromJson(doc.data());
     }).toList();
     // notifyListeners();
-    _fetchSorteduser();
   }
 
-  _fetchSorteduser() async {
+  fetchMaleHosters() async {
     final collection = db.collection("user");
     QuerySnapshot<Map<String, dynamic>> maleSnapshot =
-        await collection.where("gender", isEqualTo: "Male").get();
+        await collection.where("gender", isEqualTo: "MALE").get();
+    hostMaleList = maleSnapshot.docs.map((e) {
+      return UserModel.fromJson(e.data());
+    }).toList();
+  }
+
+  fetchFemalHosters() async {
+    final collection = db.collection("user");
     QuerySnapshot<Map<String, dynamic>> femaleSnapshot =
-        await collection.where("gender", isEqualTo: "Female").get();
+        await collection.where("gender", isEqualTo: "FENALE").get();
 
     hostFemaleList = femaleSnapshot.docs.map((e) {
       return UserModel.fromJson(e.data());
     }).toList();
-    hostMaleList = maleSnapshot.docs.map((e) {
+  }
+
+  List<UserModel> hostVerifiedList = [];
+  fetchVerifiedHosters() async {
+    final collection = db.collection("user");
+    QuerySnapshot<Map<String, dynamic>> verifiedSnapshot =
+        await collection.where("profileimage", isNotEqualTo: "").get();
+    hostVerifiedList = verifiedSnapshot.docs.map((e) {
       return UserModel.fromJson(e.data());
     }).toList();
-    // notifyListeners();
   }
 
   fetchSelectedHoster(hosterID) async {
@@ -174,7 +195,7 @@ class Firestore with ChangeNotifier {
 
   ////////////////////////////////////////////
   List<PlaceModel> topCategoryList = [];
-  _fetchTopCategory() async {
+  Future _fetchTopCategory() async {
     final collection = db.collection("Places");
     QuerySnapshot<Map<String, dynamic>> placeSnapshot =
         await collection.where("category", isEqualTo: "TOP CATEGORY").get();
@@ -185,7 +206,7 @@ class Firestore with ChangeNotifier {
   }
 
   List<PlaceModel> adventuresList = [];
-  _fetchAdventure() async {
+  Future _fetchAdventure() async {
     final collection = db.collection("Places");
     QuerySnapshot<Map<String, dynamic>> placeSnapshot =
         await collection.where("category", isEqualTo: "ADVENTURES").get();
@@ -196,7 +217,7 @@ class Firestore with ChangeNotifier {
   }
 
   List<PlaceModel> familyDestinationList = [];
-  _fetchFamilyDestination() async {
+  Future _fetchFamilyDestination() async {
     final collection = db.collection("Places");
     QuerySnapshot<Map<String, dynamic>> placeSnapshot = await collection
         .where("category", isEqualTo: "FAMILY DESTINATION")
@@ -306,8 +327,10 @@ class Firestore with ChangeNotifier {
 
     await _deleteCollection(hotelRef);
     await _deleteCollection(restaurentRef);
-    await db.collection("Places").doc(selectedPlace).delete();
-    notifyListeners();
+    await db.collection("Places").doc(selectedPlace).delete().then((value) {
+      notifyListeners();
+    });
+    // notifyListeners();
   }
 
   Future<void> _deleteCollection(
@@ -316,6 +339,7 @@ class Firestore with ChangeNotifier {
     for (QueryDocumentSnapshot doc in snapshot.docs) {
       await doc.reference.delete();
     }
+    notifyListeners();
   }
 
   //////////////////fetchAllUSer///////////////////////////////////

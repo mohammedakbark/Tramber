@@ -11,6 +11,7 @@ import 'package:tramber/View/modules/user/home.dart';
 
 import 'package:tramber/ViewModel/button_state.dart';
 import 'package:tramber/ViewModel/controll_provider.dart';
+import 'package:tramber/ViewModel/firestore.dart';
 import 'package:tramber/ViewModel/get_locatiion.dart';
 import 'package:tramber/ViewModel/pick_image.dart';
 import 'package:tramber/utils/image.dart';
@@ -372,7 +373,7 @@ class AddPlace extends StatelessWidget {
                       } else {
                         await storenstence.addPlaceDetailsToFirestore(
                             PlaceModel(
-                              isLiked: "false",
+                                isLiked: "false",
                                 category: controller.cetegory,
                                 description: description.text,
                                 image: image!,
@@ -395,6 +396,14 @@ class AddPlace extends StatelessWidget {
                                   actions: [
                                     TextButton(
                                         onPressed: () {
+                                          description.clear();
+                                          buttonState =
+                                              ButtonState.defaultvalue;
+                                          image = null;
+
+                                          Provider.of<Firestore>(context,
+                                                  listen: false)
+                                              .fetchAllPlaces();
                                           Navigator.pushReplacement(
                                               context,
                                               MaterialPageRoute(
