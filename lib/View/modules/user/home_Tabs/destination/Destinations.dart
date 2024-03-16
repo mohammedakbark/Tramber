@@ -40,16 +40,18 @@ class _DestinationsState extends State<Destinations> {
     return Scaffold(
       body: Consumer<Firestore>(builder: (context, firestore, child) {
         // final allPlaces = firestore.allPlaces;
-       
+
         return FutureBuilder(
             future: firestore.fetchDestination(),
             builder: (context, snapshot) {
-              if(snapshot.connectionState==ConnectionState.waiting){
-                return Center(child: CircularProgressIndicator(),);
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
               }
-               final family = firestore.familyDestinationList;
-        final topCatergory = firestore.topCategoryList;
-        final adventureList = firestore.adventuresList;
+              final family = firestore.familyDestinationList;
+              final topCatergory = firestore.topCategoryList;
+              final adventureList = firestore.adventuresList;
               return Container(
                 height: double.infinity,
                 width: double.infinity,
@@ -358,30 +360,53 @@ class _DestinationsState extends State<Destinations> {
                                                           100)),
                                               child: InkWell(
                                                   onTap: () {
-                                                    // Navigator.push(
-                                                    //     context,
-                                                    //     MaterialPageRoute(
-                                                    //         builder: (context) =>
-                                                    //             topCatergory[index]["nav"]
-                                                    //  PlaceMainPage(
-                                                    //     description:
-                                                    //         topCatergory[index]
-                                                    //             .description,
-                                                    //     Place: topCatergory[index]
-                                                    //         .location,
-                                                    //     placeId:
-                                                    //         "${topCatergory[index].placeID}",
-                                                    //     image:
-                                                    //         "${topCatergory[index].image}")
-                                                    // DeCategory(
-                                                    //   image:
-                                                    //       "assets/noImage.png",
-                                                    //   about: "ghfvhgdvhvmsjh",
-                                                    //   name: "jvdjhvjkdh",
-                                                    //   place: "gvdkvhdfj",
-                                                    //   star: 3,
-                                                    // )
-                                                    // ));
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) => PlaceMainPage(
+                                                                placeId:
+                                                                    topCatergory[
+                                                                            index]
+                                                                        .placeID
+                                                                        .toString(),
+                                                                Place:
+                                                                    topCatergory[
+                                                                            index]
+                                                                        .location,
+                                                                image:
+                                                                    topCatergory[
+                                                                            index]
+                                                                        .image,
+                                                                lat: topCatergory[
+                                                                        index]
+                                                                    .latitude,
+                                                                lon: topCatergory[
+                                                                        index]
+                                                                    .longitude,
+                                                                description:
+                                                                    topCatergory[
+                                                                            index]
+                                                                        .description)
+                                                            // topCatergory[index]["nav"]
+                                                            //  PlaceMainPage(
+                                                            //     description:
+                                                            //         topCatergory[index]
+                                                            //             .description,
+                                                            //     Place: topCatergory[index]
+                                                            //         .location,
+                                                            //     placeId:
+                                                            //         "${topCatergory[index].placeID}",
+                                                            //     image:
+                                                            //         "${topCatergory[index].image}")
+                                                            // DeCategory(
+                                                            //   image:
+                                                            //       "assets/noImage.png",
+                                                            //   about: "ghfvhgdvhvmsjh",
+                                                            //   name: "jvdjhvjkdh",
+                                                            //   place: "gvdkvhdfj",
+                                                            //   star: 3,
+                                                            // )
+                                                            ));
                                                   },
                                                   child: Text(
                                                     "Explore Now",
@@ -495,6 +520,27 @@ class _DestinationsState extends State<Destinations> {
                                                           100)),
                                               child: InkWell(
                                                 onTap: () {
+                                                  Navigator.of(context).push(MaterialPageRoute(
+                                                      builder: (context) => PlaceMainPage(
+                                                          placeId:
+                                                              adventureList[index]
+                                                                  .placeID
+                                                                  .toString(),
+                                                          Place: adventureList[
+                                                                  index]
+                                                              .location,
+                                                          image: adventureList[
+                                                                  index]
+                                                              .image,
+                                                          lat:
+                                                              adventureList[index]
+                                                                  .latitude,
+                                                          lon:
+                                                              adventureList[index]
+                                                                  .longitude,
+                                                          description:
+                                                              adventureList[index]
+                                                                  .description)));
                                                   // Navigator.push(
                                                   //     context,
                                                   //     MaterialPageRoute(

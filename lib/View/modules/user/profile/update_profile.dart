@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -602,13 +603,14 @@ class _UpdateProfileState extends State<UpdateProfile> {
                                       age: age.text,
                                       email: "${store.userModel?.email}",
                                       gender: selectedGender,
-                                      password: "${store.userModel?.email}",
+                                      password: "",
                                       phonenumber: phone,
                                       profileimage:
                                           "${store.userModel!.profileimage}",
                                       proofimage:
                                           "${store.userModel?.proofimage}",
-                                      userID: "${store.userModel?.email}",
+                                      userID: FirebaseAuth
+                                          .instance.currentUser!.uid,
                                       username: fullname.text,
                                       about: about.text,
                                       address: address.text,

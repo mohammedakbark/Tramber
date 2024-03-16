@@ -214,7 +214,7 @@ class _sign_upState extends State<sign_up> {
                                   label: "",
                                   age: "",
                                   email: emailCtlr.text,
-                                  gender: "",
+                                  gender: "MALE",
                                   password: passwordCtlr.text,
                                   phonenumber: phonemuber,
                                   profileimage: "",

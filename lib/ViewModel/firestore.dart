@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:tramber/Model/bucketlist_model.dart';
 import 'package:tramber/Model/hotel_model.dart';
 import 'package:tramber/Model/place_model.dart';
+import 'package:tramber/Model/popularplacemodel.dart';
 import 'package:tramber/Model/restaurent_model.dart';
 import 'package:tramber/Model/review_feedback_model.dart';
 import 'package:tramber/Model/user_model.dart';
+import 'package:tramber/View/modules/user/attractionpage/tabs/restaurent_tab.dart';
 
 import 'package:tramber/View/modules/user/home.dart';
 import 'package:tramber/ViewModel/firebase_auths.dart';
@@ -33,7 +35,7 @@ class Firestore with ChangeNotifier {
 
 ////*********************************************************************************** */
   getloginUSer(loginId, context) async {
-    _fetchCurrentUser;
+    fetchCurrentUser;
     notifyListeners();
 
     Navigator.pushAndRemoveUntil(context,
@@ -56,7 +58,7 @@ class Firestore with ChangeNotifier {
   Future fetchDatas(lginId) async {
     // await _fethcAllDestinaton();
 
-    await _fetchCurrentUser(lginId);
+    await fetchCurrentUser(lginId);
     // notifyListeners();
   }
 
@@ -86,18 +88,38 @@ class Firestore with ChangeNotifier {
   }
 
   fetchMaleHosters() async {
-    final collection = db.collection("user");
+    // final collection = db.collection("user");
+    // QuerySnapshot<Map<String, dynamic>> maleSnapshot =
+    //     await collection.where("gender", isEqualTo: "MALE").get();
+
+    // hostMaleList = maleSnapshot.docs.map((e) {
+    //   return UserModel.fromJson(e.data());
+    // }).toList();
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    print(hostFemaleList.length);
+    final hosters =
+        db.collection("user").where("userType", isEqualTo: "HOSTER");
+    print("hh");
+    final male = hosters.where("gender", isEqualTo: "MALE");
+    print("gg");
     QuerySnapshot<Map<String, dynamic>> maleSnapshot =
-        await collection.where("gender", isEqualTo: "MALE").get();
+        await male.where("userID", isNotEqualTo: uid).get();
+
     hostMaleList = maleSnapshot.docs.map((e) {
       return UserModel.fromJson(e.data());
     }).toList();
   }
 
   fetchFemalHosters() async {
-    final collection = db.collection("user");
-    QuerySnapshot<Map<String, dynamic>> femaleSnapshot =
-        await collection.where("gender", isEqualTo: "FENALE").get();
+    final hosters =
+        db.collection("user").where("userType", isEqualTo: "HOSTER");
+    final female = hosters.where("gender", isEqualTo: "FEMALE");
+    QuerySnapshot<Map<String, dynamic>> femaleSnapshot = await female
+        .where("userID", isNotEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .get();
+    // final collection = db.collection("user");
+    // QuerySnapshot<Map<String, dynamic>> femaleSnapshot =
+    //     await collection.where("gender", isEqualTo: "FENALE").get();
 
     hostFemaleList = femaleSnapshot.docs.map((e) {
       return UserModel.fromJson(e.data());
@@ -106,12 +128,20 @@ class Firestore with ChangeNotifier {
 
   List<UserModel> hostVerifiedList = [];
   fetchVerifiedHosters() async {
-    final collection = db.collection("user");
-    QuerySnapshot<Map<String, dynamic>> verifiedSnapshot =
-        await collection.where("profileimage", isNotEqualTo: "").get();
+    final hosters =
+        db.collection("user").where("userType", isEqualTo: "HOSTER");
+    final profUploaded = hosters.where("proofimage", isNotEqualTo: null);
+    QuerySnapshot<Map<String, dynamic>> verifiedSnapshot = await profUploaded
+        .where("userID", isNotEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .get();
+    // final collection = db.collection("user");
+    // QuerySnapshot<Map<String, dynamic>> verifiedSnapshot =
+    //     await collection.where("profileimage", isNotEqualTo: "").get();
     hostVerifiedList = verifiedSnapshot.docs.map((e) {
       return UserModel.fromJson(e.data());
     }).toList();
+
+    print(hostVerifiedList.length);
   }
 
   fetchSelectedHoster(hosterID) async {
@@ -153,7 +183,7 @@ class Firestore with ChangeNotifier {
   }
 /////////////////////////fetch current User///////////////////////////////
 
-  Future _fetchCurrentUser(logiId) async {
+  Future fetchCurrentUser(logiId) async {
     DocumentSnapshot<Map<String, dynamic>> userSnapshot =
         await db.collection("user").doc(logiId).get();
     if (userSnapshot.exists) {
@@ -172,9 +202,27 @@ class Firestore with ChangeNotifier {
     await getloginUSer(userID, context);
   }
 
-  ////////////////////////////////////////////
-  Future fetchAllHotelAndRestaurentsSelectedPlace(
-      placeID, selectedPlace) async {
+  ////////////////////////plca page////////////////////
+  // Future fetchAllHotelAndRestaurentsSelectedPlace(
+  //     placeID, selectedPlace) async {
+
+  //   await _fetchSelectedPlaceHosters(selectedPlace);
+  //   // await fetchAllRestaurentFromSelectedPlace(placeID);
+  //   // await fetchAllHotelFromSelectedPlace(placeID);
+  // }
+  fetchSelectedPlaceHosters(selectedPlace) async {
+    final collection = db.collection("user");
+
+    final samecity = await collection.where("city", isEqualTo: selectedPlace);
+    QuerySnapshot<Map<String, dynamic>> snapshot = await samecity
+        .where("userID", isNotEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .get();
+    selctedPlaceHosterList = snapshot.docs.map((e) {
+      return UserModel.fromJson(e.data());
+    }).toList();
+  }
+
+  Future fetchResturentInSelectedPlace(placeID) async {
     QuerySnapshot<Map<String, dynamic>> restSnapshot = await db
         .collection("Places")
         .doc(placeID)
@@ -183,14 +231,42 @@ class Firestore with ChangeNotifier {
     restaurentList = restSnapshot.docs.map((e) {
       return RestaurentModel.fromJson(e.data());
     }).toList();
+  }
+
+  Future fetchHotelsInSelectedPlace(placeID) async {
     QuerySnapshot<Map<String, dynamic>> hotelSnapshot =
         await db.collection("Places").doc(placeID).collection("Hotels").get();
     hotelsList = hotelSnapshot.docs.map((e) {
       return HotelModel.fromJson(e.data());
     }).toList();
-    await _fetchSelectedPlaceHosters(selectedPlace);
-    // await fetchAllRestaurentFromSelectedPlace(placeID);
-    // await fetchAllHotelFromSelectedPlace(placeID);
+  }
+
+  HotelModel? selectedhotel;
+  fetchSelectedHotelDetails(placeid, hotelId) async {
+    DocumentSnapshot<Map<String, dynamic>> hotelSnapshot = await db
+        .collection("Places")
+        .doc(placeid)
+        .collection("Hotels")
+        .doc(hotelId)
+        .get();
+
+    if (hotelSnapshot.exists) {
+      selectedhotel = HotelModel.fromJson(hotelSnapshot.data()!);
+    }
+  }
+
+  RestaurentModel? selectedRestaurent;
+  fetchSelectedRestaurentDetails(placeid, restId) async {
+    DocumentSnapshot<Map<String, dynamic>> restSnapshot = await db
+        .collection("Places")
+        .doc(placeid)
+        .collection("Restaurent")
+        .doc(restId)
+        .get();
+
+    if (restSnapshot.exists) {
+      selectedRestaurent = RestaurentModel.fromJson(restSnapshot.data()!);
+    }
   }
 
   ////////////////////////////////////////////
@@ -238,15 +314,6 @@ class Firestore with ChangeNotifier {
   // }
 
   ///////////////////////////////////////////////
-  _fetchSelectedPlaceHosters(selectedPlace) async {
-    final collection = db.collection("user");
-    QuerySnapshot<Map<String, dynamic>> snapshot =
-        await collection.where("city", isEqualTo: selectedPlace).get();
-
-    selctedPlaceHosterList = snapshot.docs.map((e) {
-      return UserModel.fromJson(e.data());
-    }).toList();
-  }
 
   sendFeedBacktoAdmin(ReviewFeedbackModel reviewFeedbackModel, currentUID) {
     final doc = db.collection("Rview&Feedback").doc();
@@ -300,6 +367,27 @@ class Firestore with ChangeNotifier {
       return HotelModel.fromJson(e.data());
     }).toList();
     notifyListeners();
+  }
+
+  ///////////////////POPULAR PLACE///////////////////////
+  addPopularPlace(selectedplaceId, AddPopularPlace addPopularPlace) {
+    final placedoc = db
+        .collection("Places")
+        .doc(selectedplaceId)
+        .collection("Popular")
+        .doc();
+    placedoc.set(addPopularPlace.toJson(placedoc.id));
+    notifyListeners();
+  }
+
+  List<AddPopularPlace> popularList = [];
+  fetchAllpopPlacesFromSelectedPlace(placeId) async {
+    QuerySnapshot<Map<String, dynamic>> popSnap =
+        await db.collection("Places").doc(placeId).collection("Popular").get();
+    popularList = popSnap.docs.map((e) {
+      return AddPopularPlace.fromjson(e.data());
+    }).toList();
+    // notifyListeners();
   }
 
   ///////////////////add place IMAGE////////////////////////
