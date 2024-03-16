@@ -271,6 +271,9 @@ class HotelDetailPage extends StatelessWidget {
                         style: const TextStyle(color: Colors.grey),
                       ),
                     ),
+                    SizedBox(
+                      height: height * .02,
+                    ),
                     const Text(
                       "Preview",
                       style:
@@ -279,21 +282,26 @@ class HotelDetailPage extends StatelessWidget {
                     SizedBox(
                       height: height * .01,
                     ),
-                    // Container(
-                    //   color: Colors.amber,
-                    //   width: width,
-                    //   height: height * .2,
-                    //   child: ListView.builder(
-                    //     itemBuilder: (context, index) {
-                    //       return Container(
-                    //         decoration: BoxDecoration(
-                    //             color: Colors.red,
-                    //             borderRadius: BorderRadius.circular(10)),
-                    //       );
-                    //     },
-                    //   ),
-                    // child:
-                    // )
+                    SizedBox(
+                      width: width,
+                      height: height * .2,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (context, index) {
+                          return AspectRatio(
+                            aspectRatio: 1 / 1,
+                            child: Container(
+                              margin: const EdgeInsets.all(10),
+                              // height: height * .2,
+                              // width: width / 2,
+                              decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(10)),
+                            ),
+                          );
+                        },
+                      ),
+                    )
                   ],
                 ),
               );

@@ -14,6 +14,7 @@ File? imageFileProfile;
 File? imageFileProof;
 File? imageFilePlace;
 File? imageFilePopular;
+List<File> imageFilePreviewList = [];
 
 final db = FirebaseFirestore.instance;
 final firbaseStorage = FirebaseStorage.instance;
@@ -95,6 +96,29 @@ Future addHotelImage() async {
     TaskSnapshot snapshot = await uploadTask;
     String downloadURL = await snapshot.ref.getDownloadURL();
     return downloadURL;
+    // final doc = db.collection("placeimage").doc();
+
+    // next add image to firestore
+  }
+}
+
+Future addPreviewImages() async {
+  final picker = ImagePicker();
+  final pickedFile = await picker.pickMultiImage();
+  SettableMetadata metadata = SettableMetadata(contentType: 'image/jpeg');
+  if (pickedFile != null) {
+    final currenttime = TimeOfDay.now();
+    pickedFile.map((e) {
+      return imageFilePreviewList.add(File(e.path));
+    }).toList();
+
+    //  UploadTask uploadTask = firbaseStorage
+    //       .ref()
+    //       .child("PreviewImages/Admin$currenttime")
+    //       .putFile(, metadata);
+    //        TaskSnapshot snapshot = await uploadTask;
+    //   String downloadURL = await snapshot.ref.getDownloadURL();
+    //   return downloadURL;
     // final doc = db.collection("placeimage").doc();
 
     // next add image to firestore

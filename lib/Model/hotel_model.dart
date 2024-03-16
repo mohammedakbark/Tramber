@@ -4,7 +4,7 @@ class HotelModel {
   String description;
   String image;
   String hotelName;
-  // List<String> previewimage;
+  List<String> previewimage;
   // int latitude;
   // String longitude;
   String location;
@@ -12,7 +12,7 @@ class HotelModel {
   HotelModel(
     
       {this.hotelID,
-      // required this.previewimage,
+      required this.previewimage,
       required this.category,
       required this.description,
       required this.image,
@@ -23,7 +23,7 @@ class HotelModel {
       required this.price});
   Map<String, dynamic> toJson(id) => {
         "hotelID": id,
-        // "previewimage":previewimage,
+        "previewimage":previewimage,
         "hotelName": hotelName,
         "category": category,
         "description": description,
@@ -35,7 +35,7 @@ class HotelModel {
       };
   factory HotelModel.fromJson(Map<String, dynamic> json) => HotelModel(
       hotelID: json["hotelID"],
-      // previewimage:json["previewimage"],
+      previewimage:json["previewimage"],
       hotelName: json["hotelName"],
       category: json["category"],
       description: json["description"],
