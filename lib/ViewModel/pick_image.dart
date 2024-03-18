@@ -102,27 +102,41 @@ Future addHotelImage() async {
   }
 }
 
-Future addPreviewImages() async {
+List<String> imageUrl = [];
+Future<List<String>> addPreviewImages() async {
+  imageUrl = [];
+  imageFilePreviewList = [];
   final picker = ImagePicker();
   final pickedFile = await picker.pickMultiImage();
   SettableMetadata metadata = SettableMetadata(contentType: 'image/jpeg');
   if (pickedFile != null) {
-    final currenttime = TimeOfDay.now();
     pickedFile.map((e) {
       return imageFilePreviewList.add(File(e.path));
     }).toList();
 
-    //  UploadTask uploadTask = firbaseStorage
-    //       .ref()
-    //       .child("PreviewImages/Admin$currenttime")
-    //       .putFile(, metadata);
-    //        TaskSnapshot snapshot = await uploadTask;
-    //   String downloadURL = await snapshot.ref.getDownloadURL();
-    //   return downloadURL;
-    // final doc = db.collection("placeimage").doc();
+    if (imageFilePreviewList.isNotEmpty) {
+      for (var file in imageFilePreviewList) {
+        final currenttime = DateTime.now();
+        // UploadTask uploadTask =
+        firbaseStorage
+            .ref()
+            .child("PreviewImages/Admin${currenttime.microsecond}")
+            .putFile(file, metadata)
+            .then((uploadTask) {
+          TaskSnapshot snapshot = uploadTask;
+          snapshot.ref.getDownloadURL().then((value) {
+            imageUrl.add(value);
+          });
+        });
 
+//         TaskSnapshot snapshot = await uploadTask;
+//
+      }
+    }
+    return imageUrl;
     // next add image to firestore
   }
+  return imageUrl;
 }
 
 Future addRestaurentImage() async {

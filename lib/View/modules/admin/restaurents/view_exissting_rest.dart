@@ -11,8 +11,6 @@ class ViewResaturentFromSelectedPlace extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Provider.of<Firestore>(context, listen: false)
-        .fetchAllRestaurentFromSelectedPlace(placeId);
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -26,46 +24,62 @@ class ViewResaturentFromSelectedPlace extends StatelessWidget {
         height: height,
         width: width,
         child: Consumer<Firestore>(builder: (context, firestore, child) {
-          final list = firestore.restaurentList;
-          return ListView.builder(
-              itemBuilder: (context, index) {
-                return Container(
-                  margin: const EdgeInsets.all(20),
-                  width: width,
-                  height: height * .3,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: width,
-                        height: height * .2,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(30),
-                            image: DecorationImage(
-                                fit: BoxFit.fill,
-                                image: NetworkImage(list[index].image))),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Text(
-                        "Name:${list[index].restaurentName}",
-                        style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.bold, color: Colors.grey),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        "Description:${list[index].description}",
-                        style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.bold, color: Colors.grey),
+          return FutureBuilder(
+              future: firestore.fetchAllRestaurentFromSelectedPlace(placeId),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                final list = firestore.restaurentList;
+                return list.isEmpty
+                    ? Center(
+                        child: Text("No restaurent"),
                       )
-                    ],
-                  ),
-                );
-              },
-              itemCount: list.length);
+                    : ListView.builder(
+                        itemBuilder: (context, index) {
+                          return Container(
+                            margin: const EdgeInsets.all(20),
+                            width: width,
+                            height: height * .3,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  width: width,
+                                  height: height * .2,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(30),
+                                      image: DecorationImage(
+                                          fit: BoxFit.fill,
+                                          image:
+                                              NetworkImage(list[index].image))),
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                Text(
+                                  "Name:${list[index].restaurentName}",
+                                  style: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey),
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Text(
+                                  "Description:${list[index].description}",
+                                  style: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey),
+                                )
+                              ],
+                            ),
+                          );
+                        },
+                        itemCount: list.length);
+              });
         }),
       ),
     );

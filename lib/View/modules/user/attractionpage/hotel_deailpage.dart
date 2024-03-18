@@ -285,23 +285,168 @@ class HotelDetailPage extends StatelessWidget {
                     SizedBox(
                       width: width,
                       height: height * .2,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return AspectRatio(
-                            aspectRatio: 1 / 1,
-                            child: Container(
-                              margin: const EdgeInsets.all(10),
-                              // height: height * .2,
-                              // width: width / 2,
-                              decoration: BoxDecoration(
-                                  color: Colors.red,
-                                  borderRadius: BorderRadius.circular(10)),
+                      child: hotel.previewimage.isEmpty
+                          ? Center(
+                              child: Text("No preview Images"),
+                            )
+                          : ListView.builder(
+                              itemCount: hotel.previewimage.length,
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (context, index) {
+                                return AspectRatio(
+                                  aspectRatio: 1 / 1,
+                                  child: Container(
+                                    margin: const EdgeInsets.all(10),
+
+                                    // height: height * .2,
+                                    // width: width / 2,
+                                    decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                            fit: BoxFit.fill,
+                                            image: NetworkImage(
+                                                hotel.previewimage[index])),
+                                        // color: Colors.red,
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                  ),
+                                );
+                              },
                             ),
-                          );
-                        },
+                    ),
+                    Align(
+                      child: const Text(
+                        "Similar Hotels",
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600, fontSize: 18),
                       ),
-                    )
+                    ),
+                    SizedBox(
+                      height: height * .01,
+                    ),
+                    FutureBuilder(
+                        future:
+                            firestore.fetchAllHotelFromSelectedPlace(placeId),
+                        builder: (context, snap) {
+                          if (snap.connectionState == ConnectionState.waiting) {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                          final list = firestore.hotelsList;
+                          return Expanded(
+                              child: ListView.separated(
+                            itemCount: list.length,
+                            separatorBuilder: (context, index) => SizedBox(
+                              height: 10,
+                            ),
+                            itemBuilder: (context, index) {
+                              return Container(
+                                height: 120,
+                                margin: EdgeInsets.only(left: 20, right: 20),
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(6),
+                                    color: Colors.white,
+                                    boxShadow: [
+                                      BoxShadow(
+                                          blurRadius: 10,
+                                          offset: Offset.fromDirection(1),
+                                          color: Color.fromARGB(44, 0, 0, 0),
+                                          spreadRadius: 1)
+                                    ]),
+                                child: Row(
+                                    // mainAxisAlignment:
+                                    //     MainAxisAlignment.spaceEvenly,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        margin: EdgeInsets.all(5),
+                                        width: 100,
+                                        height: 100,
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            image: DecorationImage(
+                                                fit: BoxFit.fill,
+                                                image: NetworkImage(
+                                                    list[index].image))),
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          SizedBox(
+                                            height: 20,
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                list[index]
+                                                    .hotelName
+                                                    .toUpperCase(),
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.w800),
+                                              ),
+                                              SizedBox(
+                                                width: 30,
+                                              ),
+                                              Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.end,
+                                                children: [
+                                                  Text(
+                                                    hotel.price.toUpperCase(),
+                                                    style: const TextStyle(
+                                                        fontSize: 17,
+                                                        fontWeight:
+                                                            FontWeight.w900,
+                                                        color: Color.fromRGBO(
+                                                            79,
+                                                            39,
+                                                            255,
+                                                            0.622)),
+                                                  ),
+                                                  const Text(
+                                                    "/night",
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        fontSize: 17,
+                                                        color: Colors.grey),
+                                                  )
+                                                ],
+                                              )
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.location_pin,
+                                                color: Color.fromARGB(
+                                                    255, 63, 93, 212),
+                                              ),
+                                              Text(
+                                                list[index].location,
+                                                style: TextStyle(
+                                                    color: Colors.grey),
+                                              ),
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                     
+                                    ]),
+                              );
+                            },
+                          ));
+                        }),
                   ],
                 ),
               );

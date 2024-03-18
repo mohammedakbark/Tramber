@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:tramber/Model/bucketlist_model.dart';
 import 'package:tramber/Model/hotel_model.dart';
@@ -154,7 +155,8 @@ class Firestore with ChangeNotifier {
   }
 
 //////////////////////////////bucketList//////////////////////////////////////////////
-  addtoBucketList(currentUser, BucketListModel bucketListModel, placeId) async {
+  Future addtoBucketList(
+      currentUser, BucketListModel bucketListModel, placeId) async {
     final userCollection = db.collection("user");
     final docs =
         userCollection.doc(currentUser).collection("Bucket List").doc(placeId);
@@ -179,6 +181,7 @@ class Firestore with ChangeNotifier {
         .collection("Bucket List")
         .doc(selectedBucket)
         .delete();
+
     notifyListeners();
   }
 /////////////////////////fetch current User///////////////////////////////
@@ -329,6 +332,11 @@ class Firestore with ChangeNotifier {
     // notifyListeners();
   }
 
+  deleteUser(doc) {
+    db.collection("user").doc(doc).delete();
+    notifyListeners();
+  }
+
   ////////////////////////////////restaurent////////////////////
   addRestaurent(selectedplaceId, RestaurentModel restaurentModel) {
     final restaurentDocs = db
@@ -349,24 +357,27 @@ class Firestore with ChangeNotifier {
     restaurentList = restSnapshot.docs.map((e) {
       return RestaurentModel.fromJson(e.data());
     }).toList();
-    notifyListeners();
+    // notifyListeners();
   }
 
   ///////////////////////HOTELS///////////////////////////////
-  addHotels(selectedplaceId, HotelModel hotelModel) {
+  Future addHotels(selectedplaceId, HotelModel hotelModel) async {
     final hotelDocs =
         db.collection("Places").doc(selectedplaceId).collection("Hotels").doc();
-    hotelDocs.set(hotelModel.toJson(hotelDocs.id));
+    await hotelDocs.set(hotelModel.toJson(hotelDocs.id));
     notifyListeners();
   }
 
   fetchAllHotelFromSelectedPlace(placeId) async {
+    print("<<<<<<<<<<<<<<<<<<<<<<object>>>>>>>>>>>>>>>>>>>>>>");
     QuerySnapshot<Map<String, dynamic>> hotelSnapshot =
         await db.collection("Places").doc(placeId).collection("Hotels").get();
+    print(hotelSnapshot.docs.length);
+
     hotelsList = hotelSnapshot.docs.map((e) {
       return HotelModel.fromJson(e.data());
     }).toList();
-    notifyListeners();
+    print(hotelsList.length); // notifyListeners();
   }
 
   ///////////////////POPULAR PLACE///////////////////////
@@ -488,5 +499,29 @@ class Firestore with ChangeNotifier {
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .update({"gender": newGender});
     // notifyListeners();
+  }
+
+  bool? isLiked;
+  Future<bool> checkThePlaceisInTheBucketList(
+    placeId,
+  ) async {
+    final snap = await db
+        .collection("user")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection("Bucket List")
+        .doc(placeId)
+        .get();
+    if (snap.exists) {
+      isLiked = true;
+      return true;
+    } else {
+      isLiked = false;
+      return false;
+    }
+  }
+
+  getTheNewvalue() {
+    isLiked;
+    notifyListeners();
   }
 }

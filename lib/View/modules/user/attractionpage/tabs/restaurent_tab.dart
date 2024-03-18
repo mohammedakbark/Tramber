@@ -16,8 +16,6 @@ class Restaurent extends StatelessWidget {
       height: height,
       width: width,
       child: Consumer<Firestore>(builder: (context, firestore, child) {
-        final list = firestore.restaurentList;
-
         return FutureBuilder(
             future: firestore.fetchResturentInSelectedPlace(placeID),
             builder: (context, snapshot) {
@@ -26,6 +24,8 @@ class Restaurent extends StatelessWidget {
                   child: CircularProgressIndicator(),
                 );
               }
+              final list = firestore.restaurentList;
+
               return list.isEmpty
                   ? Center(
                       child: Text(
@@ -40,7 +40,10 @@ class Restaurent extends StatelessWidget {
                         return InkWell(
                           onTap: () {
                             Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => restaurentDetailPage(),
+                              builder: (context) => restaurentDetailPage(
+                                resId: list[index].restID.toString(),
+                                palceId: placeID,
+                              ),
                             ));
                           },
                           child: Container(

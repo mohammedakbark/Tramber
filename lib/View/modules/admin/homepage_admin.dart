@@ -29,7 +29,7 @@ class HomePageAdmin extends StatelessWidget {
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         height: 100,
                         width: 100,
                         child: CircleAvatar(
@@ -63,7 +63,7 @@ class HomePageAdmin extends StatelessWidget {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => AddPlace()));
                 },
-                icon: Icon(Icons.arrow_forward_ios),
+                icon: const Icon(Icons.arrow_forward_ios),
               ),
             ),
             ListTile(
@@ -73,10 +73,12 @@ class HomePageAdmin extends StatelessWidget {
               ),
               trailing: IconButton(
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => PlaceListPage()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const PlaceListPage()));
                 },
-                icon: Icon(Icons.arrow_forward_ios),
+                icon: const Icon(Icons.arrow_forward_ios),
               ),
             ),
             ListTile(
@@ -89,9 +91,9 @@ class HomePageAdmin extends StatelessWidget {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => ReviewAndFeedback()));
+                          builder: (context) => const ReviewAndFeedback()));
                 },
-                icon: Icon(Icons.arrow_forward_ios),
+                icon: const Icon(Icons.arrow_forward_ios),
               ),
             ),
             // Expanded(child: SizedBox()),
@@ -138,7 +140,7 @@ class HomePageAdmin extends StatelessWidget {
                         size: 21,
                       ));
                 },
-                icon: Icon(Icons.logout),
+                icon: const Icon(Icons.logout),
               ),
             )
           ],
@@ -152,60 +154,90 @@ class HomePageAdmin extends StatelessWidget {
         ),
       ),
       body: Consumer<Firestore>(builder: (context, firestore, child) {
-      
         return FutureBuilder(
-        future: firestore.fetchDataForAdmin(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-            final list = firestore.userAllList;
+            future: firestore.fetchDataForAdmin(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              final list = firestore.userAllList;
 
-        return SizedBox(
-            height: height,
-            width: width,
-            child: ListView.separated(
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    leading: SizedBox(
-                      height: 70,
-                      width: 70,
-                      child: CircleAvatar(
-                        backgroundImage: list[index].profileimage == ""||list[index].profileimage == null
-                            ? imageNotFound
-                            : NetworkImage(
-                                list[index].profileimage,
+              return SizedBox(
+                  height: height,
+                  width: width,
+                  child: list.isEmpty
+                      ? const Center(
+                          child: Text("No user found"),
+                        )
+                      : ListView.separated(
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              leading: SizedBox(
+                                height: 70,
+                                width: 70,
+                                child: CircleAvatar(
+                                  backgroundImage:
+                                      list[index].profileimage == "" ||
+                                              list[index].profileimage == null
+                                          ? imageNotFound
+                                          : NetworkImage(
+                                              list[index].profileimage,
+                                            ),
+                                ),
                               ),
-                      ),
-                    ),
-                    title: Text(
-                      list[index].username.toUpperCase(),
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text(
-                      list[index].userType,
-                      style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: list[index].userType == "USER"
-                              ? Colors.blue
-                              : Colors.green),
-                    ),
-                    trailing: ElevatedButton(
-                      style:
-                          ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                      onPressed: () {},
-                      child: const Text(
-                        "Remove",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  );
-                },
-                separatorBuilder: (context, index) => const Divider(),
-                itemCount: list.length));
-        });
+                              title: Text(
+                                list[index].username.toUpperCase(),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              subtitle: Text(
+                                list[index].userType,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    color: list[index].userType == "USER"
+                                        ? Colors.blue
+                                        : Colors.green),
+                              ),
+                              trailing: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red),
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title: const Text("Confirm Delete"),
+                                        content: const Text(
+                                            "Make sure about deleting this user"),
+                                        actionsAlignment:
+                                            MainAxisAlignment.center,
+                                        actions: [
+                                          IconButton(
+                                              onPressed: () {
+                                                firestore.deleteUser(
+                                                    list[index].userID);
+                                              },
+                                              icon: const Icon(
+                                                  Icons.delete_outline,
+                                                  color: Colors.red,
+                                                  size: 40))
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
+                                child: const Text(
+                                  "Remove",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            );
+                          },
+                          separatorBuilder: (context, index) => const Divider(),
+                          itemCount: list.length));
+            });
       }),
 
       // body: ,

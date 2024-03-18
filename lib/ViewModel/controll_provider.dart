@@ -14,9 +14,9 @@ class Controller with ChangeNotifier {
     notifyListeners();
   }
 
-  bool isPlaceSave = false;
-  isplaceSvae() {
-    isPlaceSave = !isPlaceSave;
-    notifyListeners();
-  }
+  // bool isPlaceSave = false;
+  // isplaceSvae() {
+  //   isPlaceSave = !isPlaceSave;
+  //   notifyListeners();
+  // }
 }

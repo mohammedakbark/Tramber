@@ -79,37 +79,51 @@ class Attraction extends StatelessWidget {
                             ),
                             Consumer2<Controller, Firestore>(builder:
                                 (context, controller, firestore, child) {
-                              return IconButton(
-                                  onPressed: () async {
-                                    controller.isplaceSvae();
-                                    if (controller.isPlaceSave == true) {
-                                      await storenstence.addtoBucketList(
-                                          currentUID,
-                                          BucketListModel(
-                                            placeID: placeID,
-                                            image: image,
-                                            location: place,
-                                          ),
-                                          placeID);
+                              return FutureBuilder(
+                                  future: firestore
+                                      .checkThePlaceisInTheBucketList(placeID),
+                                  builder: (context, snap) {
+                                    if (snap.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return SizedBox();
                                     }
-                                    if (controller.isPlaceSave == false) {
-                                      await firestore.removeFromBucketList(
-                                          currentUID, placeID);
-                                    }
-                                  },
-                                  icon: controller.isPlaceSave
-                                      ? const Icon(
-                                          CupertinoIcons.bookmark_fill,
-                                          color: Colors.white,
+                                    return IconButton(
+                                        onPressed: () async {
+                                          // controller.isplaceSvae();
+                                          if (firestore.isLiked == false) {
+                                            await storenstence
+                                                .addtoBucketList(
+                                                    currentUID,
+                                                    BucketListModel(
+                                                      placeID: placeID,
+                                                      image: image,
+                                                      location: place,
+                                                    ),
+                                                    placeID)
+                                                .then((value) {
+                                              firestore.getTheNewvalue();
+                                            });
+                                          }
+                                          if (firestore.isLiked == true) {
+                                            await firestore
+                                                .removeFromBucketList(
+                                                    currentUID, placeID);
+                                          }
+                                        },
+                                        icon: firestore.isLiked!
+                                            ? const Icon(
+                                                CupertinoIcons.bookmark_fill,
+                                                color: Colors.white,
 
-                                          // size: 18,
-                                        )
-                                      : const Icon(
-                                          CupertinoIcons.bookmark,
-                                          color: Colors.black,
+                                                // size: 18,
+                                              )
+                                            : const Icon(
+                                                CupertinoIcons.bookmark,
+                                                color: Colors.black,
 
-                                          // size: 18,
-                                        ));
+                                                // size: 18,
+                                              ));
+                                  });
                             })
                           ],
                         ),

@@ -19,7 +19,7 @@ class RestaurentModel {
   });
   Map<String, dynamic> toJson(id) => {
         "restID": id,
-        "restaurentName":restaurentName,
+        "restaurentName": restaurentName,
         "category": category,
         "description": description,
         "image": image,
@@ -29,8 +29,8 @@ class RestaurentModel {
       };
   factory RestaurentModel.fromJson(Map<String, dynamic> json) =>
       RestaurentModel(
-        restaurentName:json["restaurentName"],
-          restID: json["restId"],
+          restaurentName: json["restaurentName"],
+          restID: json["restID"],
           category: json["category"],
           description: json["description"],
           image: json["image"],

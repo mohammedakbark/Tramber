@@ -5,6 +5,7 @@ import 'package:tramber/Model/hotel_model.dart';
 import 'package:tramber/View/modules/admin/hotel/view_exissting_hotels.dart';
 import 'package:tramber/View/modules/admin/restaurents/view_exissting_rest.dart';
 import 'package:tramber/ViewModel/controll_provider.dart';
+import 'package:tramber/ViewModel/firestore.dart';
 import 'package:tramber/ViewModel/pick_image.dart';
 import 'package:tramber/utils/variables.dart';
 
@@ -18,9 +19,12 @@ class AddHotelsPage extends StatelessWidget {
     location.clear();
     hotelNmae.clear();
     price.clear();
+    urlList = [];
+    imageFilePreviewList = [];
   }
 
   String? image;
+  List<String>? urlList;
   TextEditingController description = TextEditingController();
   TextEditingController location = TextEditingController();
   TextEditingController hotelNmae = TextEditingController();
@@ -49,7 +53,7 @@ class AddHotelsPage extends StatelessWidget {
                       ));
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-                child: Text(
+                child: const Text(
                   "View Existing Hotels",
                   style: TextStyle(color: Colors.white),
                 ))
@@ -58,7 +62,7 @@ class AddHotelsPage extends StatelessWidget {
         body: Consumer<Controller>(builder: (context, controller, child) {
           return SingleChildScrollView(
             child: Container(
-                margin: EdgeInsets.only(left: 20, right: 20),
+                margin: const EdgeInsets.only(left: 20, right: 20),
                 height: height,
                 width: width,
                 child: Form(
@@ -147,10 +151,8 @@ class AddHotelsPage extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: const Color.fromRGBO(104, 187, 227, 0.5),
                             image: DecorationImage(
-                                image: image != null
-                                    ? FileImage(imageFilePlace!)
-                                    : const AssetImage('asset/images.jpeg')
-                                        as ImageProvider<Object>,
+                                image: const AssetImage('asset/images.jpeg')
+                                    as ImageProvider<Object>,
                                 fit: BoxFit.fill),
                             borderRadius: BorderRadius.circular(15),
                             border: Border.all(
@@ -160,7 +162,9 @@ class AddHotelsPage extends StatelessWidget {
                             onTap: () async {
                               controller.imageIsLoading(true);
                               await addPreviewImages().then((value) {
-                                image = value;
+                                urlList = value;
+                                print(value.length);
+                                print("-------------------");
                                 controller.imageIsLoading(false);
                               });
                             },
@@ -179,11 +183,11 @@ class AddHotelsPage extends StatelessWidget {
                                   ),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         ),
                         imageFilePreviewList.length == 0
-                            ? SizedBox()
+                            ? const SizedBox()
                             : SizedBox(
                                 width: width,
                                 height: height * .2,
@@ -204,7 +208,7 @@ class AddHotelsPage extends StatelessWidget {
                                                 image: FileImage(
                                                   imageFilePreviewList[index],
                                                 )),
-                                            color: Colors.red,
+                                            // color: Colors.red,
                                             borderRadius:
                                                 BorderRadius.circular(10)),
                                       ),
@@ -284,6 +288,7 @@ class AddHotelsPage extends StatelessWidget {
                               },
                               maxLines: 1,
                               controller: price,
+                              keyboardType: TextInputType.number,
                               decoration: const InputDecoration(
                                 hintText: "Price",
                                 border: OutlineInputBorder(
@@ -306,16 +311,26 @@ class AddHotelsPage extends StatelessWidget {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
                                           content: Text("Pick Image ")));
+                                } else if (urlList == null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              "Pick the preview images of hotel ")));
                                 } else {
-                                  // storenstence.addHotels(
-                                  //     placeId,
-                                  //     HotelModel(
-                                  //         category: "Hotel",
-                                  //         description: description.text,
-                                  //         image: image!,
-                                  //         hotelName: hotelNmae.text,
-                                  //         location: location.text,
-                                  //         price: price.text));
+                                  storenstence
+                                      .addHotels(
+                                          placeId,
+                                          HotelModel(
+                                              previewimage: urlList!,
+                                              category: "Hotel",
+                                              description: description.text,
+                                              image: image!,
+                                              hotelName: hotelNmae.text,
+                                              location: location.text,
+                                              price: price.text))
+                                      .then((value) {
+                                    cleardata();
+                                  });
 
                                   await showDialog(
                                       context: context,
@@ -332,7 +347,6 @@ class AddHotelsPage extends StatelessWidget {
                                             actions: [
                                               TextButton(
                                                   onPressed: () {
-                                                    cleardata();
                                                     Navigator.pushReplacement(
                                                         context,
                                                         MaterialPageRoute(
@@ -352,19 +366,20 @@ class AddHotelsPage extends StatelessWidget {
                                             ],
                                           ));
                                 }
-
-                                print("object");
                               }
 
-                              // storenstence.addHotels(placeId, HotelModel(category: category, description: description, image: image, latitude: latitude, longitude: longitude, location: location, price: price))
-                            },
+                              print("object");
+                            }
+
+                            // storenstence.addHotels(placeId, HotelModel(category: category, description: description, image: image, latitude: latitude, longitude: longitude, location: location, price: price))
+                            ,
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.black),
-                            child: Text(
+                            child: const Text(
                               "Add Hotel",
                               style: TextStyle(color: Colors.white),
                             )),
-                        SizedBox(
+                        const SizedBox(
                           height: 20,
                         )
                       ]),

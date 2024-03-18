@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +19,7 @@ class AddNewPopularPlacePage extends StatelessWidget {
   String? image;
   var namecontrller = TextEditingController();
   var _formkey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -180,6 +183,7 @@ class AddNewPopularPlacePage extends StatelessWidget {
 
   void cleardata() {
     image = null;
+    imageFilePopular = null;
 
     namecontrller.clear();
   }
