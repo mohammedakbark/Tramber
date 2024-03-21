@@ -286,7 +286,7 @@ class HotelDetailPage extends StatelessWidget {
                       width: width,
                       height: height * .2,
                       child: hotel.previewimage.isEmpty
-                          ? Center(
+                          ? const Center(
                               child: Text("No preview Images"),
                             )
                           : ListView.builder(
@@ -313,8 +313,8 @@ class HotelDetailPage extends StatelessWidget {
                               },
                             ),
                     ),
-                    Align(
-                      child: const Text(
+                    const Align(
+                      child: Text(
                         "Similar Hotels",
                         style: TextStyle(
                             fontWeight: FontWeight.w600, fontSize: 18),
@@ -328,7 +328,7 @@ class HotelDetailPage extends StatelessWidget {
                             firestore.fetchAllHotelFromSelectedPlace(placeId),
                         builder: (context, snap) {
                           if (snap.connectionState == ConnectionState.waiting) {
-                            return Center(
+                            return const Center(
                               child: CircularProgressIndicator(),
                             );
                           }
@@ -336,13 +336,13 @@ class HotelDetailPage extends StatelessWidget {
                           return Expanded(
                               child: ListView.separated(
                             itemCount: list.length,
-                            separatorBuilder: (context, index) => SizedBox(
+                            separatorBuilder: (context, index) => const SizedBox(
                               height: 10,
                             ),
                             itemBuilder: (context, index) {
                               return Container(
                                 height: 120,
-                                margin: EdgeInsets.only(left: 20, right: 20),
+                                margin: const EdgeInsets.only(left: 20, right: 20),
                                 alignment: Alignment.center,
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(6),
@@ -351,7 +351,7 @@ class HotelDetailPage extends StatelessWidget {
                                       BoxShadow(
                                           blurRadius: 10,
                                           offset: Offset.fromDirection(1),
-                                          color: Color.fromARGB(44, 0, 0, 0),
+                                          color: const Color.fromARGB(44, 0, 0, 0),
                                           spreadRadius: 1)
                                     ]),
                                 child: Row(
@@ -361,7 +361,7 @@ class HotelDetailPage extends StatelessWidget {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Container(
-                                        margin: EdgeInsets.all(5),
+                                        margin: const EdgeInsets.all(5),
                                         width: 100,
                                         height: 100,
                                         decoration: BoxDecoration(
@@ -372,14 +372,14 @@ class HotelDetailPage extends StatelessWidget {
                                                 image: NetworkImage(
                                                     list[index].image))),
                                       ),
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 10,
                                       ),
                                       Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          SizedBox(
+                                          const SizedBox(
                                             height: 20,
                                           ),
                                           Row(
@@ -390,11 +390,11 @@ class HotelDetailPage extends StatelessWidget {
                                                 list[index]
                                                     .hotelName
                                                     .toUpperCase(),
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     fontWeight:
                                                         FontWeight.w800),
                                               ),
-                                              SizedBox(
+                                              const SizedBox(
                                                 width: 30,
                                               ),
                                               Row(
@@ -427,14 +427,14 @@ class HotelDetailPage extends StatelessWidget {
                                           ),
                                           Row(
                                             children: [
-                                              Icon(
+                                              const Icon(
                                                 Icons.location_pin,
                                                 color: Color.fromARGB(
                                                     255, 63, 93, 212),
                                               ),
                                               Text(
                                                 list[index].location,
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     color: Colors.grey),
                                               ),
                                             ],
